@@ -1,3 +1,5 @@
+import { useState } from 'react'
+import CoverGate from './components/CoverGate'
 import FloatingDecor from './components/FloatingDecor'
 import Hero from './components/Hero'
 import MessageSection from './components/MessageSection'
@@ -7,6 +9,7 @@ import { memories } from './data/memories'
 
 function App() {
   const motionPreset = 'dreamy'
+  const [isUnlocked, setIsUnlocked] = useState(false)
 
   const handleEnterSurprise = () => {
     const message = document.getElementById('message')
@@ -17,6 +20,10 @@ function App() {
     { id: 'hero', label: 'Home' },
     { id: 'message', label: 'Message' },
   ]
+
+  if (!isUnlocked) {
+    return <CoverGate onUnlock={() => setIsUnlocked(true)} />
+  }
 
   return (
     <div className="relative min-h-screen overflow-x-hidden">
