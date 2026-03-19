@@ -6,21 +6,39 @@ function CoverGate({ onUnlock }) {
   const [dob, setDob] = useState('')
   const [error, setError] = useState('')
   const [isUnlocking, setIsUnlocking] = useState(false)
+  const [errorCount, setErrorCount] = useState(0)
+
+  const isValidName = name.trim().toLowerCase() === 'gullu'
+  const isValidDob = dob === '2005-03-20'
 
   const handleUnlock = (event) => {
     event.preventDefault()
 
-    const isValidName = name.trim().toLowerCase() === 'gullu'
-    const isValidDob = dob === '2005-03-20'
-
     if (!isValidName || !isValidDob) {
       setError('Please enter correct name and date of birth to open the surprise.')
+      setErrorCount((current) => current + 1)
       return
     }
 
     setError('')
     setIsUnlocking(true)
     window.setTimeout(() => onUnlock(), 700)
+  }
+
+  const handleNameChange = (event) => {
+    setName(event.target.value)
+    if (error) setError('')
+  }
+
+  const handleDobChange = (event) => {
+    setDob(event.target.value)
+    if (error) setError('')
+  }
+
+  const fillHintValues = () => {
+    setName('Gullu')
+    setDob('2005-03-20')
+    setError('')
   }
 
   return (
@@ -34,11 +52,20 @@ function CoverGate({ onUnlock }) {
       <motion.form
         onSubmit={handleUnlock}
         initial={{ opacity: 0, y: 18, scale: 0.98 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
+        animate={{ opacity: 1, y: 0, scale: 1, x: errorCount ? [0, -7, 7, -5, 5, 0] : 0 }}
         transition={{ duration: 0.6, ease: 'easeOut' }}
         className="relative z-10 w-full max-w-md rounded-3xl border border-white/70 bg-white/60 p-6 shadow-[0_24px_60px_rgba(119,43,113,0.22)] backdrop-blur-xl md:p-8"
       >
-        <p className="text-xs uppercase tracking-[0.28em] text-rose-500">Private Entry</p>
+        <div className="flex items-center justify-between gap-3">
+          <p className="text-xs uppercase tracking-[0.28em] text-rose-500">Private Entry</p>
+          <button
+            type="button"
+            onClick={fillHintValues}
+            className="rounded-full border border-rose-200 bg-white/80 px-3 py-1 text-xs font-semibold text-rose-700 transition hover:border-rose-300 hover:bg-white"
+          >
+            Quick Fill
+          </button>
+        </div>
         <h1 className="mt-2 font-display text-4xl leading-tight text-rose-900">A Little Secret Door</h1>
         <p className="mt-3 text-sm text-rose-700">
           Enter the birthday star&apos;s name and date of birth to unlock this special page.
@@ -51,7 +78,7 @@ function CoverGate({ onUnlock }) {
           id="cover-name"
           type="text"
           value={name}
-          onChange={(event) => setName(event.target.value)}
+          onChange={handleNameChange}
           placeholder="Enter name"
           className="mt-2 w-full rounded-xl border border-rose-200 bg-white/80 px-4 py-3 text-rose-900 outline-none transition focus:border-rose-400 focus:ring-2 focus:ring-rose-300/40"
         />
@@ -63,10 +90,10 @@ function CoverGate({ onUnlock }) {
           id="cover-dob"
           type="date"
           value={dob}
-          onChange={(event) => setDob(event.target.value)}
+          onChange={handleDobChange}
           className="mt-2 w-full rounded-xl border border-rose-200 bg-white/80 px-4 py-3 text-rose-900 outline-none transition focus:border-rose-400 focus:ring-2 focus:ring-rose-300/40"
         />
-        <p className="mt-2 text-xs text-rose-500">Use date: 20/03/2005</p>
+        <p className="mt-2 text-xs text-rose-500">Hint: use 20/03/2005</p>
 
         {error && <p className="mt-4 rounded-lg bg-rose-100 px-3 py-2 text-sm text-rose-700">{error}</p>}
 
